@@ -1,0 +1,30 @@
+version: "3.8"
+services:
+    app:
+        build: .
+        depends_on:
+            - postgres
+        environment:
+            - WAIT_HOSTS=postgres:5432
+            - WAIT_HOSTS_TIMEOUT=300
+            - WAIT_SLEEP_INTERVAL=30
+            - WAIT_HOST_CONNECT_TIMEOUT=30
+        networks:
+            - db_data
+
+    postgres:
+        container_name: postgres
+        image: postgres
+        environment:
+            # change this for a "real" app!
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_USER: postgres
+            POSTGRES_DB: comatch_test
+        networks:
+            - db_data
+        volumes:
+            - ./db/create_table.sql:/docker-entrypoint-initdb.d/init.sql
+
+networks:
+    db_data:
+        driver: bridge
